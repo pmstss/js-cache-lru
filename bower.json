@@ -1,0 +1,36 @@
+{
+  "name": "js-cache-lru",
+  "description": "lru-cache js implementation with capacity and maxAge support",
+  "main": "lru-cache.js",
+  "authors": [
+    "Viachaslau Tyshkavets"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "cache",
+    "lru",
+    "lru-cache",
+    "lru",
+    "cache",
+    "double",
+    "linked",
+    "list",
+    "least",
+    "recently",
+    "used"
+  ],
+  "homepage": "https://github.com/pmstss/js-cache-lru",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "*.iml",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
