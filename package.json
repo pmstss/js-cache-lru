@@ -1,0 +1,30 @@
+{
+  "name": "js-cache-lru",
+  "version": "0.0.1",
+  "description": "trivial lru-cache js implementation with capacity and maxAge support",
+  "main": "lru-cache.js",
+  "dependencies": {},
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "mocha": "^1.21.4"
+  },
+  "scripts": {
+    "test": "mocha -R spec --recursive test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pmstss/js-cache-lru.git"
+  },
+  "keywords": [
+    "cache",
+    "lru-cache",
+    "double linked list",
+    "last recently used"
+  ],
+  "author": "Viachaslau Tyshkavets",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pmstss/js-cache-lru/issues"
+  },
+  "homepage": "https://github.com/pmstss/js-cache-lru"
+}
