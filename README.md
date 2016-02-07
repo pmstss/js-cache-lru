@@ -76,6 +76,17 @@ Note: entries hash is implemented as plain js object, so all keys will be treate
     cache.maxAge; // getter for maxAge (either specified in constructor or default)
     ```
 
+## Development
+
+```sh
+    git clone https://github.com/pmstss/js-cache-lru # clone this repository
+    cd js-cache-lru
+    npm install # installs node modules (assuming that npm and node are already installed)
+    # <do changes>
+    npm run test # run tests
+    # submit pull request https://github.com/pmstss/js-cache-lru/pulls
+```
+
 ## Credits
 Inspired by and based on https://github.com/viruschidai/lru-cache 
 
