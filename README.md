@@ -10,9 +10,9 @@ Note: entries hash is implemented as plain js object, so all keys will be treate
 
 ## Installation
 * via npm
-    npm install js-cache-lru -save
+    `npm install js-cache-lru -save`
 * via bower
-    bower install js-cache-lru
+    `bower install js-cache-lru`
 
 ## APIs
 * constructor
