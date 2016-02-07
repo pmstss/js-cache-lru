@@ -1,18 +1,18 @@
 # js-cache-lru
 
-Trivial JS lru-cache library available both as [npm](https://www.npmjs.com/package/js-cache-lru) and [Bower](http://bower.io/) package. AMD/CommonJS/browser compliant.
+JS lru-cache library available both as [npm](https://www.npmjs.com/package/js-cache-lru) and [Bower](http://bower.io/) package. AMD/CommonJS/browser compliant.
 Supports capacity and entry max edge as constructor parameters.
 
-Each set or get operation will reset last visited time of cached entry. When reaching capacity, least recently used entry will be removed.
+Each set or get operation will reset last visited time of cached entry. When reaching capacity, [least recently used](https://en.wikipedia.org/wiki/Cache_algorithms#LRU) entry will be removed.
 
 Internally uses double linked list and hash for entries lookup to provide constant time ([O(1) complexity](https://en.wikipedia.org/wiki/Big_O_notation)) for entries get, set and remove.
 Note: entries hash is implemented as plain js object, so all keys will be treated as strings.
 
 ## Installation
 * via npm
-    `npm install js-cache-lru -save`
+    `npm install js-cache-lru --save`
 * via bower
-    `bower install js-cache-lru`
+    `bower install js-cache-lru --save`
 
 ## APIs
 * constructor
