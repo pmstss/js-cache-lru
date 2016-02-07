@@ -1,6 +1,6 @@
 {
   "name": "js-cache-lru",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "lru-cache js implementation with capacity and maxAge support",
   "main": "lru-cache.js",
   "dependencies": {},
