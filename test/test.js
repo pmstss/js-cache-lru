@@ -4,7 +4,7 @@
     //jshint mocha:true
 
     var expect = require('expect.js');
-    var LRUCache = require('../lru-cache');
+    var LRUCache = require('../js-cache-lru');
 
     var data = [{
         key: 'key1',
@@ -78,11 +78,21 @@
                 return expect(cache.values).to.eql([data[1].value, data[2].value]);
             });
 
-            return it('recently accessed node should survive cleanup on reaching capacity', function () {
+            it('recently accessed via get() node should survive cleanup on reaching capacity', function () {
                 var cache = new LRUCache(2);
                 cache.set(data[0].key, data[0].value);
                 cache.set(data[1].key, data[1].value);
                 cache.get(data[0].key);
+                cache.set(data[2].key, data[2].value);
+                expect(cache.keys).to.eql([data[0].key, data[2].key]);
+                return expect(cache.values).to.eql([data[0].value, data[2].value]);
+            });
+
+            return it('recently accessed via has() node should survive cleanup on reaching capacity', function () {
+                var cache = new LRUCache(2);
+                cache.set(data[0].key, data[0].value);
+                cache.set(data[1].key, data[1].value);
+                expect(cache.has(data[0].key)).to.be(true);
                 cache.set(data[2].key, data[2].value);
                 expect(cache.keys).to.eql([data[0].key, data[2].key]);
                 return expect(cache.values).to.eql([data[0].value, data[2].value]);

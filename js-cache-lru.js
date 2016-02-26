@@ -109,6 +109,11 @@
             return MAX_AGE !== 0 && Date.now() - node.data.lastVisitTime > MAX_AGE;
         }
 
+        function _removeDirectly(key) {
+            _linkedList.remove(_hash[key]);
+            delete _hash[key];
+        }
+
         function LRUCache() {
         }
 
@@ -126,8 +131,7 @@
 
         LRUCache.prototype.remove = function (key) {
             if (this.has(key)) {
-                _linkedList.remove(_hash[key]);
-                delete _hash[key];
+                _removeDirectly(key);
             }
         };
 
@@ -157,20 +161,25 @@
         };
 
         LRUCache.prototype.get = function (key) {
-            var node = _hash[key];
-            if (!node) {
+            if (!this.has(key)) {
                 return;
             }
-            if (_isExpiredNode(node)) {
-                this.remove(key);
-                return;
-            }
-            _refreshNode(node);
-            return node.data.value;
+            return _hash[key].data.value;
         };
 
         LRUCache.prototype.has = function (key) {
-            return _hash.hasOwnProperty(key);
+            var exist = _hash.hasOwnProperty(key);
+            if (!exist) {
+                return false;
+            }
+
+            var node = _hash[key];
+            if (_isExpiredNode(node)) {
+                _removeDirectly(key);
+                return false;
+            }
+            _refreshNode(node);
+            return true;
         };
 
         Object.defineProperty(LRUCache.prototype, 'length', {
