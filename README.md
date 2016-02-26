@@ -1,6 +1,6 @@
 # js-cache-lru
 
-JS lru-cache library available both as [npm](https://www.npmjs.com/package/js-cache-lru) and [Bower](http://bower.io/) package. AMD/CommonJS/browser compliant.
+JS LRU cache library available both as [npm](https://www.npmjs.com/package/js-cache-lru) and [Bower](http://bower.io/) package. AMD/CommonJS/browser compliant.
 Supports capacity and entry max edge as constructor parameters.
 
 Each set or get operation will reset last visited time of cached entry. When reaching capacity, [least recently used](https://en.wikipedia.org/wiki/Cache_algorithms#LRU) entry will be removed.
@@ -18,7 +18,7 @@ Note: entries hash is implemented as plain js object, so all keys will be treate
 * constructor
     - has optional capacity (defaults to 256) and maxAge (in milliseconds; defaults to 0 - i.e. entries will be never cleared)
     ```javascript
-    var LRUCache = require('lru-cache');
+    var LRUCache = require('js-cache-lru');
     var cache = new LRUCache([capacity], [maxAge]);
     ```
 
