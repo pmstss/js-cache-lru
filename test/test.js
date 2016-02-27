@@ -4,7 +4,7 @@
     //jshint mocha:true
 
     var expect = require('expect.js');
-    var LRUCache = require('../js-cache-lru');
+    var LRUCache = require('../src/js-cache-lru');
 
     var data = [{
         key: 'key1',
@@ -17,7 +17,7 @@
         value: 'value3'
     }];
 
-    describe('LRUCache', function () {
+    describe('js-cache-lru', function () {
         describe('constructor', function () {
             it('should create a LRU cache with required capacity and maxAge', function () {
                 var cache = new LRUCache(128, 42);
@@ -41,23 +41,6 @@
                 expect(cache.values).to.eql([data[0].value]);
                 return expect(data[0].key).to.be(data[0].key);
             });
-
-            /*it('should add object key-value in cache', function () {
-                var cache = new LRUCache();
-
-                expect(cache.length).to.be(0);
-                cache.set(data[0], data[1]);
-                expect(cache.length).to.be(1);
-                expect(cache.keys).to.eql([data[0]]);
-                expect(cache.values).to.eql([data[1]]);
-
-                cache.set(data[1], data[2]);
-                expect(cache.length).to.be(2);
-                expect(cache.keys).to.eql([data[0], data[1]]);
-                expect(cache.values).to.eql([data[1], data[2]]);
-
-                return expect(cache.get(data[0])).to.be(data[1]);
-            });*/
 
             it('should update value if a key is already in the cache', function () {
                 var cache = new LRUCache();
@@ -232,4 +215,4 @@
             });
         });
     });
-}).call(this);
+})();

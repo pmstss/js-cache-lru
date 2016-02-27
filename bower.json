@@ -1,7 +1,7 @@
 {
   "name": "js-cache-lru",
   "description": "lru-cache js implementation with capacity and maxAge support",
-  "main": "lru-cache.js",
+  "main": "js-cache-lru.js",
   "authors": [
     "Viachaslau Tyshkavets"
   ],
@@ -9,15 +9,9 @@
   "keywords": [
     "cache",
     "lru",
-    "lru-cache",
-    "lru",
-    "cache",
-    "double",
-    "linked",
-    "list",
-    "least",
-    "recently",
-    "used"
+    "lru cache",
+    "least recently used",
+    "doubly linked list"
   ],
   "homepage": "https://github.com/pmstss/js-cache-lru",
   "moduleType": [

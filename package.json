@@ -1,6 +1,6 @@
 {
   "name": "js-cache-lru",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "lru cache js implementation with capacity and maxAge support",
   "main": "js-cache-lru.js",
   "dependencies": {},
@@ -20,7 +20,7 @@
     "lru",
     "lru-cache",
     "lru cache",
-    "double linked list",
+    "doubly linked list",
     "least recently used"
   ],
   "author": "Viachaslau Tyshkavets",
