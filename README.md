@@ -41,7 +41,7 @@ Note: entries hash is implemented as plain js object, so all keys will be treate
 * clear() _O(n)_
     - removes all entries from cache. Internally clears hash and double linked list with nilling prev/next entries references.
     ```javascript
-    cache.clear(); // now cache.size is 0
+    cache.clear(); // now cache.length is 0
     ```
 
 * remove(key) _O(1)_
@@ -51,12 +51,14 @@ Note: entries hash is implemented as plain js object, so all keys will be treate
     cache.get('key1'); // returns undefined
     ```
 
-* size _O(1)_
+* length _O(1)_
+    - note: expiration check is not performed; returned value includes nodes that could already expire, but didn't yet cleared, because were not yet accessed
     ```javascript
-    cache.size; // getter for cache actual size
+    cache.length; // getter for cache actual size
     ```
 
 * keys _O(n)_
+    - note: expiration check is not performed; returned value includes nodes that could already expire, but didn't yet cleared, because were not yet accessed
     ```javascript
     cache.keys; // getter for all cache keys
     ```

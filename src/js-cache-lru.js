@@ -17,7 +17,7 @@
 
     return function (capacity, maxAge) {
         var MAX_AGE = maxAge || 0;    // no expiration by default
-        var CAPACITY = capacity || 256; // capacity is 100 by default
+        var CAPACITY = capacity || 256; // capacity is 256 by default
 
         var DLL = require('./dl-list');
         var _linkedList = new DLL();
