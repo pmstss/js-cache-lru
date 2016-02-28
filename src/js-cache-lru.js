@@ -15,21 +15,52 @@
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
 
-    return function (capacity, maxAge) {
-        var MAX_AGE = maxAge || 0;    // no expiration by default
-        var CAPACITY = capacity || 256; // capacity is 256 by default
+    var DLL = require('./dl-list');
 
-        var DLL = require('./dl-list');
+    return function (capacity, cleanupTime, expirationTime) {
+        var CLEANUP_TIME = cleanupTime || 0;    // no cleanup by default
+        var EXPIRATION_TIME = expirationTime || 0;    // no expiration by default
+        var CAPACITY = capacity || 256; // capacity is 256 by default
+        var _referencesCleanup = false;
+
         var _linkedList = new DLL();
         var _hash = {};
+        var _cleanupTimer;
+
+        function _clearCleanupTimer() {
+            if (_cleanupTimer) {
+                clearTimeout(_cleanupTimer);
+                _cleanupTimer = null;
+            }
+        }
+
+        function _clear() {
+            _hash = {};
+            if (_referencesCleanup) {
+                _linkedList.clear();
+            } else {
+                _linkedList = new DLL();
+            }
+            _clearCleanupTimer();
+        }
+
+        function _resetCleanupTimer() {
+            _clearCleanupTimer();
+
+            if (CLEANUP_TIME !== 0) {
+                _cleanupTimer = setTimeout(_clear, CLEANUP_TIME);
+            }
+        }
 
         function _refreshNode(node) {
             node.lastVisitTime = Date.now();
             _linkedList.moveToHead(node.listNode);
+            _resetCleanupTimer();
         }
 
         function _isExpiredNode(node) {
-            return MAX_AGE !== 0 && Date.now() - node.lastVisitTime > MAX_AGE;
+            var expirationTime = node.hasOwnProperty(expirationTime) ? node.expirationTime : EXPIRATION_TIME;
+            return expirationTime !== 0 && Date.now() - node.lastVisitTime > expirationTime;
         }
 
         function _removeDirectly(key) {
@@ -37,8 +68,18 @@
             delete _hash[key];
         }
 
+        /*** LRUCache ***/
+
         function LRUCache() {
         }
+
+        LRUCache.prototype.enableReferencesCleanup = function () {
+            _referencesCleanup = true;
+        };
+
+        LRUCache.prototype.disableReferencesCleanup = function () {
+            _referencesCleanup = false;
+        };
 
         Object.defineProperty(LRUCache.prototype, 'capacity', {
             get: function () {
@@ -46,9 +87,15 @@
             }
         });
 
-        Object.defineProperty(LRUCache.prototype, 'maxAge', {
+        Object.defineProperty(LRUCache.prototype, 'expirationTime', {
             get: function () {
-                return MAX_AGE;
+                return EXPIRATION_TIME;
+            }
+        });
+
+        Object.defineProperty(LRUCache.prototype, 'cleanupTime', {
+            get: function () {
+                return CLEANUP_TIME;
             }
         });
 
@@ -58,10 +105,7 @@
             }
         };
 
-        LRUCache.prototype.clear = function () {
-            _hash = {};
-            _linkedList.clear();
-        };
+        LRUCache.prototype.clear = _clear;
 
         LRUCache.prototype.set = function (key, value) {
             var node = _hash[key];
@@ -75,11 +119,11 @@
                 }
                 var data = {
                     key: key,
-                    value: value,
-                    lastVisitTime: Date.now()
+                    value: value
                 };
                 data.listNode = _linkedList.append(data);
                 _hash[key] = data;
+                _refreshNode(data);
             }
         };
 

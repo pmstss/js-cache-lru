@@ -1,9 +1,12 @@
 # js-cache-lru
 
 JS LRU cache library available both as [npm](https://www.npmjs.com/package/js-cache-lru) and [Bower](http://bower.io/) package. AMD/CommonJS/browser compliant.
-Supports capacity and entry max edge as constructor parameters.
+Supports capacity, cache auto cleanup timeout and entries expiration timeout (expirationTime) as constructor parameters.
 
-Each set or get operation will reset last visited time of cached entry. When reaching capacity, [least recently used](https://en.wikipedia.org/wiki/Cache_algorithms#LRU) entry will be removed.
+Each set, get or has operation will reset last visited time of cached entry. When reaching capacity, [least recently used](https://en.wikipedia.org/wiki/Cache_algorithms#LRU) entry will be superseded.
+
+Cleanup timeout feature (cleanupTime parameter): stands for clearing all cache data after some timeout since last access; implemented via setTimeout/clearTimeout.
+Entries expiration timeout (expirationTime parameter): stands for avoiding outdated entries. In contrast to cleanupTime checking is done only on demand (set/get/has access) and does not use timers.
 
 Internally uses double linked list and hash for entries lookup to provide constant time ([O(1) complexity](https://en.wikipedia.org/wiki/Big_O_notation)) for entries get, set and remove.
 Note: entries hash is implemented as plain js object, so all keys will be treated as strings.
@@ -16,10 +19,10 @@ Note: entries hash is implemented as plain js object, so all keys will be treate
 
 ## APIs
 * constructor
-    - has optional capacity (defaults to 256) and maxAge (in milliseconds; defaults to 0 - i.e. entries will be never cleared)
+    - has optional capacity (defaults to 256), cleanupTime (defaults to 0 - never cleanup) and expirationTime (in milliseconds; defaults to 0 - i.e. entries will be never cleared)
     ```javascript
     var LRUCache = require('js-cache-lru');
-    var cache = new LRUCache([capacity], [maxAge]);
+    var cache = new LRUCache([capacity], [cleanupTime], [expirationTime]);
     ```
 
 * set(key, value) _O(1)_
@@ -38,7 +41,7 @@ Note: entries hash is implemented as plain js object, so all keys will be treate
     cache.get('key1'); // should return 'value1'
     ```
 
-* clear() _O(n)_
+* clear() _O(1); O(n) if referencesCleanup enabled_
     - removes all entries from cache. Internally clears hash and double linked list with nilling prev/next entries references.
     ```javascript
     cache.clear(); // now cache.length is 0
@@ -50,6 +53,12 @@ Note: entries hash is implemented as plain js object, so all keys will be treate
     cache.remove('key1');
     cache.get('key1'); // returns undefined
     ```
+
+* enableReferencesCleanup() _O(1)_
+    - enables references cleanup on clearing internal doubly linked list. Could help to avoid memory leaks on some (old) engines, but makes clear asymptotic time O(n) instead of O(1).
+
+* enableReferencesCleanup() _O(1)_
+    - disables references cleanup (disabled by default)
 
 * length _O(1)_
     - note: expiration check is not performed; returned value includes nodes that could already expire, but didn't yet cleared, because were not yet accessed
@@ -73,9 +82,14 @@ Note: entries hash is implemented as plain js object, so all keys will be treate
     cache.capacity; // getter for capacity (either specified in constructor or default)
     ```
 
-* maxAge _O(1)_
+* cleanupTime _O(1)_
     ```javascript
-    cache.maxAge; // getter for maxAge (either specified in constructor or default)
+    cache.cleanupTime; // getter for cleanupTime (either specified in constructor or default)
+    ```
+
+* expirationTime _O(1)_
+    ```javascript
+    cache.expirationTime; // getter for expirationTime (either specified in constructor or default)
     ```
 
 ## Development

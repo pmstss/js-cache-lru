@@ -19,15 +19,17 @@
 
     describe('js-cache-lru', function () {
         describe('constructor', function () {
-            it('should create a LRU cache with required capacity and maxAge', function () {
-                var cache = new LRUCache(128, 42);
-                expect(cache.maxAge).to.be(42);
-                return expect(cache.capacity).to.be(128);
+            it('should create a LRU cache with required capacity, expirationTime and cleanupTime', function () {
+                var cache = new LRUCache(42, 1024, 256);
+                expect(cache.capacity).to.be(42);
+                expect(cache.cleanupTime).to.be(1024);
+                return expect(cache.expirationTime).to.be(256);
             });
-            return it('should create a LRU cache with default capacity and maxAge', function () {
+            return it('should create a LRU cache with default capacity, expirationTime and cleanupTime', function () {
                 var cache = new LRUCache();
-                expect(cache.maxAge).to.be(0);
-                return expect(cache.capacity).to.be(256);
+                expect(cache.capacity).to.be(256);
+                expect(cache.cleanupTime).to.be(0);
+                return expect(cache.expirationTime).to.be(0);
             });
         });
 
@@ -68,7 +70,8 @@
                 cache.get(data[0].key);
                 cache.set(data[2].key, data[2].value);
                 expect(cache.keys).to.eql([data[0].key, data[2].key]);
-                return expect(cache.values).to.eql([data[0].value, data[2].value]);
+                expect(cache.values).to.eql([data[0].value, data[2].value]);
+                return expect(cache.has(data[1].key)).to.be(false);
             });
 
             return it('recently accessed via has() node should survive cleanup on reaching capacity', function () {
@@ -78,7 +81,8 @@
                 expect(cache.has(data[0].key)).to.be(true);
                 cache.set(data[2].key, data[2].value);
                 expect(cache.keys).to.eql([data[0].key, data[2].key]);
-                return expect(cache.values).to.eql([data[0].value, data[2].value]);
+                expect(cache.values).to.eql([data[0].value, data[2].value]);
+                return expect(cache.has(data[1].key)).to.be(false);
             });
         });
 
@@ -117,7 +121,7 @@
             return it('should do nothing if the key does not exist in the cache', function () {
                 cache.set(data[0].key, data[0].value);
                 expect(cache.length).to.be(1);
-                cache.remove('data[1].key');
+                cache.remove(data[1].key);
                 return expect(cache.length).to.be(1);
             });
         });
@@ -126,8 +130,8 @@
             return it('should return all keys in the cache', function () {
                 var cache = new LRUCache();
                 cache.set(data[0].key, data[0].value);
-                cache.set('data[1].key', 'data[1].value');
-                return expect(cache.keys).to.eql([data[0].key, 'data[1].key']);
+                cache.set(data[1].key, data[1].value);
+                return expect(cache.keys).to.eql([data[0].key, data[1].key]);
             });
         });
 
@@ -135,13 +139,13 @@
             it('should return all values in cache', function () {
                 var cache = new LRUCache();
                 cache.set(data[0].key, data[0].value);
-                cache.set('data[1].key', 'data[1].value');
-                return expect(cache.values).to.eql([data[0].value, 'data[1].value']);
+                cache.set(data[1].key, data[1].value);
+                return expect(cache.values).to.eql([data[0].value, data[1].value]);
             });
             return it('should return empty array if all values expired', function (done) {
                 var cache = new LRUCache(2, 200);
                 cache.set(data[0].key, data[0].value);
-                cache.set('data[1].key', 'data[1].value');
+                cache.set(data[1].key, data[1].value);
                 return setTimeout(function () {
                     expect(cache.values).to.eql([]);
                     return done();
@@ -149,41 +153,69 @@
             });
         });
 
-        describe('Expires', function () {
-            it('should expire node after maxAge', function (done) {
-                var cache = new LRUCache(2, 200);
+        describe('expirationTime (global)', function () {
+            it('node should expire after expirationTime is over', function (done) {
+                var cache = new LRUCache(2, 0, 200);
                 cache.set(data[0].key, data[0].value);
-                expect(cache.get(data[0].key)).to.be(data[0].value);
                 expect(cache.length).to.be(1);
                 return setTimeout(function () {
-                    expect(cache.get(data[0].key)).to.be(void 0);
+                    expect(cache.get(data[0].key)).to.be(undefined);
                     expect(cache.length).to.be(0);
                     return done();
                 }, 300);
             });
 
-            it('should reset expire time of a node when set is called', function (done) {
-                var cache;
-                cache = new LRUCache(2, 300);
+            it('set() should reset node expiration', function (done) {
+                var cache = new LRUCache(2, 0, 300);
                 cache.set(data[0].key, data[0].value);
-                expect(cache.get(data[0].key)).to.be(data[0].value);
+                cache.set(data[1].key, data[1].value);
+                expect(cache.length).to.be(2);
                 setTimeout(function () {
-                    return cache.set(data[0].key, data[0].value);
+                    cache.set(data[0].key, data[0].value);
+                }, 200);
+                return setTimeout(function () {
+                    expect(cache.get(data[0].key)).to.be(data[0].value);
+                    expect(cache.get(data[1].key)).to.be(undefined);
+                    expect(cache.length).to.be(1);
+                    return done();
+                }, 400);
+            });
+
+            return it('get() should reset node expiration', function (done) {
+                var cache = new LRUCache(2, 0, 300);
+                cache.set(data[0].key, data[0].value);
+                setTimeout(function () {
+                    cache.get(data[0].key);
                 }, 200);
                 return setTimeout(function () {
                     expect(cache.get(data[0].key)).to.be(data[0].value);
                     return done();
                 }, 400);
             });
+        });
 
-            return it('should reset expire time of a node when get is called', function (done) {
+        describe('cleanupTime', function () {
+            it('cache should be cleared after cleanupTime is over', function (done) {
+                var cache = new LRUCache(2, 200);
+                cache.set(data[0].key, data[0].value);
+                cache.set(data[1].key, data[1].value);
+                expect(cache.length).to.be(2);
+                return setTimeout(function () {
+                    expect(cache.get(data[0].key)).to.be(undefined);
+                    expect(cache.length).to.be(0);
+                    return done();
+                }, 300);
+            });
+
+            it('cache should not be cleared if any node was recently accessed', function (done) {
                 var cache = new LRUCache(2, 300);
                 cache.set(data[0].key, data[0].value);
-                expect(cache.get(data[0].key)).to.be(data[0].value);
+                expect(cache.length).to.be(1);
                 setTimeout(function () {
-                    return cache.get(data[0].key);
+                    cache.has(data[0].key);
                 }, 200);
                 return setTimeout(function () {
+                    expect(cache.length).to.be(1);
                     expect(cache.get(data[0].key)).to.be(data[0].value);
                     return done();
                 }, 400);
@@ -216,3 +248,4 @@
         });
     });
 })();
+
