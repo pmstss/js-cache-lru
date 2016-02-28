@@ -75,8 +75,10 @@
         };
 
         DLL.prototype.moveToHead = function (node) {
-            this.remove(node);
-            this.append(node);
+            if (node !== _head) {
+                this.remove(node);
+                this.append(node);
+            }
         };
 
         DLL.prototype.clear = function () {
