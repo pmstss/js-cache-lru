@@ -1,5 +1,7 @@
 var LRUCache = require('./src/js-cache-lru');
 
+require('console-stamp')(console, 'HH:MM:ss.l');
+
 console.log(process.memoryUsage());
 
 (function () {
@@ -28,7 +30,7 @@ console.log(process.memoryUsage());
             addElements(cache, Math.round(Math.random() * 100));
 
             if (++i % 100 === 0) {
-                console.log('%o iterations done, memory usage: %o', i, process.memoryUsage());
+                console.log(`${i} iterations done, memory usage: ${JSON.stringify(process.memoryUsage())}`);
             }
         }
     }
@@ -47,7 +49,7 @@ console.log(process.memoryUsage());
             caches.push(cache);
 
             if (++i % 100 === 0) {
-                console.log('%o iterations done, memory usage: %o', i, process.memoryUsage());
+                console.log(`${i} iterations done, memory usage: ${JSON.stringify(process.memoryUsage())}`);
             }
         }, 30);
     }
